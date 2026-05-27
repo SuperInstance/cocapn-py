@@ -152,15 +152,18 @@ class TokenCount:
     def __repr__(self):
         return f"TokenCount(in={self.in_}, out={self.out})"
 
+    def __eq__(self, other):
+        return isinstance(other, TokenCount) and self.in_ == other.in_ and self.out == other.out
+
     @property
-    def total(self):
+    def total(self) -> int:
         return self.in_ + self.out
 
 
 class ChatResponse:
     __slots__ = ("text", "cost", "tokens", "model", "provider", "raw")
 
-    def __init__(self, text: str, cost: float, tokens: TokenCount, model: str, provider: str, raw: dict = None):
+    def __init__(self, text: str, cost: float, tokens: TokenCount, model: str, provider: str, raw: dict | None = None):
         self.text = text
         self.cost = cost
         self.tokens = tokens
@@ -170,6 +173,16 @@ class ChatResponse:
 
     def __repr__(self):
         return f"ChatResponse(model={self.model!r}, cost=${self.cost:.6f}, tokens={self.tokens})"
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, ChatResponse)
+            and self.text == other.text
+            and self.cost == other.cost
+            and self.tokens == other.tokens
+            and self.model == other.model
+            and self.provider == other.provider
+        )
 
 
 class Model:
@@ -183,6 +196,15 @@ class Model:
 
     def __repr__(self):
         return f"Model({self.id!r}, cost_in=${self.cost_in}, cost_out=${self.cost_out})"
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, Model)
+            and self.id == other.id
+            and self.provider == other.provider
+            and self.cost_in == other.cost_in
+            and self.cost_out == other.cost_out
+        )
 
 
 # Module-level convenience
