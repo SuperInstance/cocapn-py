@@ -72,6 +72,7 @@ Yields text chunks.
 ### `usage(period="day") → UsageReport`
 
 ## How It Fits
+- [OpenConstruct Documentation](https://github.com/SuperInstance/openconstruct-docs) — ecosystem-wide docs and guides
 
 The Python counterpart to [cocapn-sdk](https://github.com/SuperInstance/cocapn-sdk) (Node.js). Both talk to the same [API gateway](https://github.com/SuperInstance/api-gateway-1).
 
