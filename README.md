@@ -1,87 +1,95 @@
-# cocapn — Python SDK
+# cocapn-py — Python SDK
 
-One API key, any AI model, see what it costs.
+**One API key, any AI model, see what it costs. Python edition.**
 
-## Install
+## What This Gives You
+
+- **One API key** — route to DeepSeek, GPT-4o, Claude, Gemini, and more through a single endpoint
+- **Cost transparency** — every response includes exact cost, token counts, and provider
+- **Streaming** — `chat_stream()` yields text chunks as they arrive
+- **Model catalog** — list available models with per-token pricing
+- **Usage stats** — query your spend by day, week, or month
+- **Type-hinted** — full type annotations, dataclass responses
+
+## Quick Start
 
 ```bash
 pip install cocapn
 ```
 
-## Quick Start
-
 ```python
 from cocapn import Cocapn
 
-client = Cocapn(api_key="cocapn_your_key")
+client = Cocapn()  # uses COCAPN_API_KEY env var
 
-response = client.chat("Explain quantum computing", model="deepseek-chat")
-print(response.text)      # "Quantum computing uses..."
-print(response.cost)      # 0.0042
-print(response.tokens)    # TokenCount(in=15, out=847)
-print(response.tokens.total)  # 862
+response = client.chat(
+    "Explain transformers in one paragraph",
+    model="deepseek-chat",
+    system="You are a concise teacher."
+)
+
+print(response.text)      # "Transformers are..."
+print(response.cost)      # 0.000042
+print(response.tokens)    # TokenCount(in_=15, out=47)
+print(response.provider)  # "deepseek"
 ```
 
-## Streaming
+### Streaming
 
 ```python
-for chunk in client.chat_stream("Tell me a story", model="claude-3-5-sonnet"):
+for chunk in client.chat_stream("Tell me a story", model="gpt-4o"):
     print(chunk, end="", flush=True)
 ```
 
-## System Prompts
+### List Models
 
 ```python
-response = client.chat(
-    "Summarize this article",
-    model="gpt-4o",
-    system="You write concise summaries.",
-)
+for m in client.models():
+    print(f"{m.id:30s} ${m.cost_in}/in  ${m.cost_out}/out")
 ```
 
-## Conversation History
-
-```python
-history = [
-    {"role": "user", "content": "My name is Casey"},
-    {"role": "assistant", "content": "Hello Casey!"},
-]
-response = client.chat("What's my name?", history=history)
-# "Your name is Casey."
-```
-
-## Models
-
-```python
-for model in client.models():
-    print(f"{model.id}: ${model.cost_in}/${model.cost_out} per 1M tokens")
-```
-
-## Usage
+### Usage Stats
 
 ```python
 usage = client.usage("week")
-print(f"Total cost: ${usage['totalCost']}")
-print(f"Requests: {usage['requests']}")
 ```
 
-## Environment Variables
+## API Reference
+
+### `Cocapn(api_key=None, base_url=None)`
+| Param | Default | Description |
+|-------|---------|-------------|
+| `api_key` | `COCAPN_API_KEY` env | Your Cocapn API key |
+| `base_url` | `https://cocapn.ai` | API base URL |
+
+### `chat(message, *, model="deepseek-chat", system=None, max_tokens=4096, temperature=None, history=None) → ChatResponse`
+Returns `ChatResponse(text, cost, tokens: TokenCount, model, provider, raw)`.
+
+### `chat_stream(message, ...) → Iterator[str]`
+Yields text chunks.
+
+### `models() → list[ModelInfo]`
+### `usage(period="day") → UsageReport`
+
+## How It Fits
+
+The Python counterpart to [cocapn-sdk](https://github.com/SuperInstance/cocapn-sdk) (Node.js). Both talk to the same [API gateway](https://github.com/SuperInstance/api-gateway-1).
+
+- **[cocapn](https://github.com/SuperInstance/cocapn)** — Core agent infrastructure (uses this SDK)
+- **[cocapn-explain](https://github.com/SuperInstance/cocapn-explain)** — Agent explainability
+- **[cocapn-health-rs](https://github.com/SuperInstance/cocapn-health-rs)** — Fleet health monitoring
+
+## Testing
 
 ```bash
-export COCAPN_API_KEY="cocapn_your_key"
-export COCAPN_BASE_URL="https://cocapn.ai"  # optional
+pip install pytest pytest-asyncio
+pytest tests/
 ```
 
-## Context Manager
+## Installation
 
-```python
-with Cocapn() as client:
-    response = client.chat("Hello!")
+```bash
+pip install cocapn
 ```
 
-## Quick One-Liner
-
-```python
-from cocapn import chat
-response = chat("Hello!", model="deepseek-chat")
-```
+Requires Python 3.9+. Uses `httpx` for HTTP. MIT license.
