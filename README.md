@@ -1,5 +1,9 @@
 # cocapn-py — Python SDK
 
+[![PyPI version](https://img.shields.io/pypi/v/cocapn)](https://pypi.org/project/cocapn/) [![SuperInstance](https://img.shields.io/badge/SuperInstance-Ecosystem-blue)](https://github.com/SuperInstance)
+
+
+
 **One API key, any AI model, see what it costs. Python edition.**
 
 ## What This Gives You
